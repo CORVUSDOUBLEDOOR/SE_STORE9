@@ -1,5 +1,3 @@
-package SE_STORE5;
-
 public class Cart {
     private String userID;
     private String productID;

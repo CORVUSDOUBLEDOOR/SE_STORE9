@@ -1,5 +1,3 @@
-package SE_STORE5;
-
 public class Product {
     String nameProduct;
     String id;

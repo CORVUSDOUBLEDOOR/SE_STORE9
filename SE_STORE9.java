@@ -1,5 +1,3 @@
-package SE_STORE5;
-
 import java.io.*;
 import java.util.*;
 
@@ -9,14 +7,14 @@ public class SE_STORE9 {
     public static Cart[] cart;
 
     public static void main(String[] args) throws IOException {
-        File txtProduct = new File("C:\\Users\\ghost\\IdeaProjects\\untitled\\src\\SE_STORE5\\PRODUCT (4).txt");
+        File txtProduct = new File("C:\\Users\\informatics\\IdeaProjects\\untitled2\\src\\PRODUCT (4).txt");
         ;
         Scanner countNum = new Scanner(System.in);
         String typeNumber;
         boolean loopOrNot = true;
         Scanner reader = new Scanner(txtProduct);
         int countProduct = 0;
-        File category = new File("C:\\Users\\ghost\\IdeaProjects\\untitled\\src\\SE_STORE5\\CATEGORY.txt");
+        File category = new File("C:\\Users\\informatics\\IdeaProjects\\untitled2\\src\\CATEGORY.txt");
         ArrayList<String> nameCategory = new ArrayList<String>();
         String typeCategory;
         Scanner inputCategory = new Scanner(category);
@@ -161,9 +159,10 @@ public class SE_STORE9 {
 
                                                     "\t1. Show Category\t\t\t\n" +
                                                     "\t2. Order Product\n" +
-                                                    "\t3. Exit\t\t\t\n" +
+                                                    "\t3. Search Product\n" +
+                                                    "\t4. Exit\t\t\t\n" +
                                                     "\t====================\t\t\t\n" +
-                                                    "\tSelect (1-3) :\t");
+                                                    "\tSelect (1-4) :\t");
                                     typeNumber = countNum.nextLine();
                                     if (typeNumber.equalsIgnoreCase("1")) {
                                         loopCategory = true;
@@ -222,12 +221,14 @@ public class SE_STORE9 {
                                     } else if (typeNumber.equalsIgnoreCase("2")) {
                                         SE_STORE9 seStore9 = new SE_STORE9();
                                         seStore9.printAllProduct(product, role);
-                                        System.out.print("\tEnter the product number followed by the quantity.\t\t\t\t\t\n" +
-                                                "\t1. How to Order\n" +
-                                                "\t2. List Products\n" +
-                                                "\tQ. Exit\n");
                                         boolean loopInputOrder = true;
                                         while (loopInputOrder == true) {
+                                            System.out.print("\tEnter the product number followed by the quantity.\t\t\t\t\t\n" +
+                                                "\t1. How to Order\n" +
+                                                "\t2. List Products\n" +
+                                                "\t3. My Cart\n"+
+                                                "\tQ. Exit\n");
+
                                             String inputOrder;
                                             Scanner scannerInputPreOrder = new Scanner(System.in);
                                             System.out.print("\tEnter : ");
@@ -244,6 +245,86 @@ public class SE_STORE9 {
                                                             "\t\t- to reduce items: 1 -50 (Removes 50 chips)\n");
                                                 } else if (line[0].equalsIgnoreCase("2")) {
                                                     seStore9.printAllProduct(product, role);
+                                                } else if (line[0].equalsIgnoreCase("3")) {
+                                                    boolean loopMyCart = true;
+                                                    while(loopMyCart == true) {
+                                                        System.out.print("\t====================\n" +
+                                                                "\tMy Cart\n" +
+                                                                "\t====================\n");
+                                                        loadFileCart();
+                                                        ArrayList<Integer> userIdIndexCart = new ArrayList<Integer>();
+                                                        for (int i = 0; i < cart.length; i++) {
+                                                            if (cart[i].getUserID().equalsIgnoreCase(member[correctIndex].getIdUser())) {
+                                                                userIdIndexCart.add(i);
+                                                            }
+                                                        }
+                                                        System.out.print("\t#\tName\t        Quantity\tTotals (฿)\n");
+                                                        int countOrder = 1;
+                                                        double priceTotal = 0.00;
+                                                        for (int i = 0; i < userIdIndexCart.size(); i++) {
+                                                            String nameProduct = "";
+                                                            for (int j = 0; j < product.length; j++) {
+                                                                if (cart[userIdIndexCart.get(i)].getProductID().equalsIgnoreCase(product[j].getId())) {
+                                                                    nameProduct = product[j].getNameProduct();
+                                                                }
+                                                            }
+
+                                                            System.out.printf("\t%-3d %-15s %-13d %-8.2f\n",
+                                                                    countOrder,
+                                                                    nameProduct,
+                                                                    cart[userIdIndexCart.get(i)].getQuantity(),
+                                                                    ((product[i].getCost() * 34) * cart[userIdIndexCart.get(i)].getQuantity()));
+                                                            countOrder++;
+                                                            priceTotal += ((product[i].getCost() * 34) * cart[userIdIndexCart.get(i)].getQuantity());
+                                                        }
+                                                        System.out.print("\t===========================================\t\n" +
+                                                                "\tPrice: " + priceTotal + " Baht\n" +
+                                                                "\t===========================================\n");
+                                                        System.out.print("\t1. Checkout\n" +
+                                                                "\t2. Back\n" +
+                                                                "\tEnter : ");
+                                                        Scanner inputTypeChooser = new Scanner(System.in);
+                                                        String typeChooser = inputTypeChooser.next();
+
+                                                        boolean loopCheckout = true;
+                                                        while (loopCheckout == true) {
+                                                            if (typeChooser.equalsIgnoreCase("1")) {
+                                                                System.out.print("\t====================\n" +
+                                                                        "\tCheckout\n" +
+                                                                        "\t====================\n");
+                                                                printMyCart(userIdIndexCart);
+                                                                System.out.print("\t===========================================\t\n" +
+                                                                        "\tPrice: " + priceTotal + "\n" +
+                                                                        "\tShipping Fee: 50.00\n" +
+                                                                        "\tTotal: " + (priceTotal + 50.00) + "\n" +
+                                                                        "\t===========================================\t\n" +
+                                                                        "\t1. Confirm\n" +
+                                                                        "\t2. Cancel\n" +
+                                                                        "\tEnter : ");
+                                                                typeChooser = inputTypeChooser.next();
+                                                                if (typeChooser.equalsIgnoreCase("1")){
+                                                                    System.out.print("\tThank you for your purchase\n");
+                                                                    loopMyCart = false;
+                                                                    loopInputOrder = false;
+                                                                    loopCheckout = false;
+                                                                    break;
+                                                                } else if (typeChooser.equalsIgnoreCase("2")){
+                                                                    System.out.print("\t====================\n" +
+                                                                            "\tAdd Something to Cart\n" +
+                                                                            "\t====================\n");
+                                                                    loopCheckout = false;
+                                                                    loopMyCart = false;
+                                                                    break;
+                                                                }
+                                                            } else if(typeChooser.equalsIgnoreCase("2")){
+                                                                System.out.print("\t====================\n" +
+                                                                        "\tAdd Something to Cart\n" +
+                                                                        "\t====================\n");
+                                                                loopMyCart = false;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
                                                 } else if (line[0].equalsIgnoreCase("q")) {
                                                     System.out.println("\tYour cart has been saved!");
                                                     loopInputOrder = false;
@@ -271,7 +352,7 @@ public class SE_STORE9 {
                                                             if (product[Integer.parseInt(line[0]) - 1].getQuantity() - numberQuantityProduct < 0) {
                                                                 invalid = true;
                                                             } else {
-                                                                createNewOrder(member[correctIndex].getIdUser(), product[Integer.parseInt(line[0])-1].getId(), numberQuantityProduct);
+                                                                createNewOrder(member[correctIndex].getIdUser(), product[Integer.parseInt(line[0]) - 1].getId(), numberQuantityProduct);
 
                                                                 product[Integer.parseInt(line[0]) - 1].setQuantity(product[Integer.parseInt(line[0]) - 1].getQuantity() - numberQuantityProduct);
                                                                 updateFile_product();
@@ -302,7 +383,7 @@ public class SE_STORE9 {
                                                                 cart[index_Order].setQuantity(cart[index_Order].getQuantity() - quantity_input);
                                                                 updateFile_Order();
 
-                                                                product[Integer.parseInt(line[0])-1].setQuantity(product[Integer.parseInt(line[0])-1].getQuantity() + quantity_input);
+                                                                product[Integer.parseInt(line[0]) - 1].setQuantity(product[Integer.parseInt(line[0]) - 1].getQuantity() + quantity_input);
                                                                 updateFile_product();
                                                             }
                                                         } else {
@@ -315,7 +396,7 @@ public class SE_STORE9 {
                                                             if (product[Integer.parseInt(line[0]) - 1].getQuantity() - quantity_input < 0) {
                                                                 invalid = true;
                                                             } else {
-                                                                createNewOrder(member[correctIndex].getIdUser(), product[Integer.parseInt(line[0])-1].getId(), quantity_input);
+                                                                createNewOrder(member[correctIndex].getIdUser(), product[Integer.parseInt(line[0]) - 1].getId(), quantity_input);
 
                                                                 product[Integer.parseInt(line[0]) - 1].setQuantity(product[Integer.parseInt(line[0]) - 1].getQuantity() - quantity_input);
                                                                 updateFile_product();
@@ -337,7 +418,7 @@ public class SE_STORE9 {
                                                 } else {
                                                     invalid = true;
                                                 }
-                                                if(invalid == true){
+                                                if (invalid == true) {
                                                     System.out.println("\tYour input is invalid!");
                                                 }
                                             } else {
@@ -345,6 +426,40 @@ public class SE_STORE9 {
                                             }
                                         }
                                     } else if (typeNumber.equalsIgnoreCase("3")) {
+                                        SE_STORE9 seStore9 = new SE_STORE9();
+                                        Scanner inputseach = new Scanner(System.in);
+                                        System.out.print("\t====================\n" +
+                                                "\tSearch Product\n" +
+                                                "\t====================\n" +
+                                                "\tType Product Name: ");
+                                        String searhProductName = inputseach.nextLine();
+                                        System.out.print("\t====================\n");
+                                        boolean searchingTrue = false;
+                                        ArrayList<Integer>indexSearch = new ArrayList<Integer>();
+                                        for(int i = 0 ; i < product.length; i++){
+                                            int countingTrue = 0;
+                                            for(int j = 0; j < searhProductName.length(); j++){
+                                                try {
+                                                    if(searhProductName.toLowerCase().charAt(j) == product[i].getNameProduct().toLowerCase().charAt(j)){
+                                                        countingTrue++;
+                                                        if(countingTrue == searhProductName.length()){
+                                                            searchingTrue = true;
+                                                            indexSearch.add(i);
+                                                        }
+                                                    }
+                                                } catch (StringIndexOutOfBoundsException s){
+                                                    searchingTrue = false;
+                                                }
+
+                                            }
+                                        }
+                                        if(searchingTrue == true){
+                                            seStore9.printSearchProduct(product, role, indexSearch);
+                                        }else{
+                                            System.out.print("\tSorry Product Not found\n" +
+                                                    "\t====================");
+                                        }
+                                    } else if (typeNumber.equalsIgnoreCase("4")) {
                                         loopLogin = false;
                                         loopOrNot = false;
                                     } else {
@@ -458,7 +573,7 @@ public class SE_STORE9 {
 
                                                 if (checkAddmember == true) {
                                                     //generate password
-                                                    FileWriter writer = new FileWriter("C:\\Users\\ghost\\IdeaProjects\\untitled\\src\\SE_STORE5\\MEMBER (5).txt", true);
+                                                    FileWriter writer = new FileWriter("C:\\Users\\informatics\\IdeaProjects\\untitled2\\src\\MEMBER (5).txt", true);
                                                     Random random = new Random();
                                                     int randomNumber = random.nextInt(999999);
                                                     String randomPassword = String.format("%06d", randomNumber);
@@ -567,7 +682,7 @@ public class SE_STORE9 {
                                                             }
                                                             if (checkEdit == true) {
                                                                 System.out.println("\tSuccess - Member has been updated!");
-                                                                BufferedWriter editMembered = new BufferedWriter(new FileWriter("C:\\Users\\ghost\\IdeaProjects\\untitled\\src\\SE_STORE5\\MEMBER (5).txt", false));
+                                                                BufferedWriter editMembered = new BufferedWriter(new FileWriter("C:\\Users\\informatics\\IdeaProjects\\untitled2\\src\\MEMBER (5).txt", false));
                                                                 for (int i = 0; i < member.length; i++) {
                                                                     String memberLine = (member[i].getIdUser() + "\t" + member[i].getFirstnameUser() + "\t" + member[i].getLastnameUser() +
                                                                             "\t" + member[i].getEmailUser() + "\t" + member[i].getPasswordUser() + "\t" + member[i].getPhoneUser() + "\t" +
@@ -652,7 +767,7 @@ public class SE_STORE9 {
 
                                                             if (checkEdit == true) {
                                                                 System.out.println("\tSuccess - Product has been updated!");
-                                                                BufferedWriter editProducted = new BufferedWriter(new FileWriter("C:\\Users\\ghost\\IdeaProjects\\untitled\\src\\SE_STORE5\\PRODUCT (4).txt", false));
+                                                                BufferedWriter editProducted = new BufferedWriter(new FileWriter("C:\\Users\\informatics\\IdeaProjects\\untitled2\\src\\PRODUCT (4).txt", false));
                                                                 for (int i = 0; i < product.length; i++) {
                                                                     String productLine = product[i].getId() + "\t" + product[i].getNameProduct() + "\t$" + product[i].getCost() +
                                                                             "\t" + product[i].getQuantity() + "\t" + product[i].getIdCategory() + "\n";
@@ -742,6 +857,43 @@ public class SE_STORE9 {
         }
     }
 
+    public void printSearchProduct(Product[] product, String role ,ArrayList<Integer> indexSearch) {
+        if (role.equals("Regular") || role.equals("Staff")) {
+            System.out.println("\t#\tName\t    \tPrice(฿)\t  Quantity");
+        } else {
+            System.out.println("\t#\tName\t    \tPrice(฿)\t         Quantity");
+        }
+        int countProduct = 1;
+        for (int i = 0; i < indexSearch.size() ; i++) {
+            if (role.equals("Regular") || role.equals("Staff")) {
+                System.out.printf("\t%-3d %-15s %-13.2f %-8d\n",
+                        countProduct,
+                        product[indexSearch.get(i)].getNameProduct(),
+                        product[indexSearch.get(i)].getCost() * 34,
+                        product[indexSearch.get(i)].getQuantity());
+                countProduct++;
+            } else if (role.equals("Silver")) {
+                double discount = 0.05;
+                System.out.printf("\t%-3d %-15s %-7.2f (%7.2f) %5d\n",
+                        countProduct,
+                        product[indexSearch.get(i)].getNameProduct(),
+                        (product[indexSearch.get(i)].getCost() * 34) - ((product[indexSearch.get(i)].getCost() * 34) * discount),
+                        product[indexSearch.get(i)].getCost() * 34,
+                        product[indexSearch.get(i)].getQuantity());
+                countProduct++;
+            } else {
+                double discount = 0.10;
+                System.out.printf("\t%-3d %-15s %-7.2f (%7.2f) %5d\n",
+                        countProduct,
+                        product[indexSearch.get(i)].getNameProduct(),
+                        (product[indexSearch.get(i)].getCost() * 34) - ((product[indexSearch.get(i)].getCost() * 34) * discount),
+                        product[indexSearch.get(i)].getCost() * 34,
+                        product[indexSearch.get(i)].getQuantity());
+                countProduct++;
+            }
+        }
+    }
+
     public void printAllProductStaff(Product[] product) {
         System.out.println("\t#\tName\t    \tPrice(฿)\t  Quantity");
         int countProduct = 1;
@@ -795,7 +947,7 @@ public class SE_STORE9 {
     }
 
     public static void AddCartToFile(String newLine) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\ghost\\IdeaProjects\\untitled\\src\\SE_STORE5\\CART.txt", true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\informatics\\IdeaProjects\\untitled2\\src\\CART.txt", true))) {
             writer.write(newLine);
         } catch (IOException e) {
             e.printStackTrace();
@@ -811,7 +963,7 @@ public class SE_STORE9 {
 
     public static void updateFile_Order() {
         Cart[] backUpOrder = cart;
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\ghost\\IdeaProjects\\untitled\\src\\SE_STORE5\\CART.txt", false))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\informatics\\IdeaProjects\\untitled2\\src\\CART.txt", false))) {
             for (int i = 0; i < backUpOrder.length; i++) {
                 if (backUpOrder[i].getQuantity() > 0) {
                     writer.write(backUpOrder[i].getUserID() + "\t" + backUpOrder[i].getProductID() + "\t" + backUpOrder[i].getQuantity() + "\n");
@@ -823,7 +975,7 @@ public class SE_STORE9 {
     }
 
     public static void loadFileCart() throws FileNotFoundException{
-        File cartReader = new File("C:\\Users\\ghost\\IdeaProjects\\untitled\\src\\SE_STORE5\\CART.txt");
+        File cartReader = new File("C:\\Users\\informatics\\IdeaProjects\\untitled2\\src\\CART.txt");
         Scanner inputCart = new Scanner(cartReader);
         int countCart = 0;
         while (inputCart.hasNextLine()) {
@@ -843,7 +995,7 @@ public class SE_STORE9 {
 
     public static void updateFile_product(){
         Product [] backUpProducts = product;
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\ghost\\IdeaProjects\\untitled\\src\\SE_STORE5\\PRODUCT (4).txt",false))){
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\informatics\\IdeaProjects\\untitled2\\src\\PRODUCT (4).txt",false))){
             for(int i = 0; i < backUpProducts.length; i++){
                 writer.write(backUpProducts[i].getId() + "\t" + backUpProducts[i].getNameProduct() + "\t" + "$" +
                         backUpProducts[i].getCost() + "\t" + backUpProducts[i].getQuantity() + "\t" + backUpProducts[i].getIdCategory() + "\n");
@@ -854,7 +1006,7 @@ public class SE_STORE9 {
     }
 
     public static void readMember() throws FileNotFoundException {
-        File memberReader = new File("C:\\Users\\ghost\\IdeaProjects\\untitled\\src\\SE_STORE5\\MEMBER (5).txt");
+        File memberReader = new File("C:\\Users\\informatics\\IdeaProjects\\untitled2\\src\\MEMBER (5).txt");
         Scanner inputMember = new Scanner(memberReader);
         int countMember = 0;
         while (inputMember.hasNextLine()) {
@@ -877,6 +1029,28 @@ public class SE_STORE9 {
             String pointUser = line[6];
             member[getCountMember] = new Member(idUser, firstnameUser, lastnameUser, emailUser, passwordUser, phoneUser, pointUser);
             getCountMember++;
+        }
+    }
+
+    public static void printMyCart ( ArrayList<Integer> userIdIndexCart){
+        System.out.print("\t#\tName\t        Quantity\tTotals (฿)\n");
+        int countOrder = 1;
+        double priceTotal = 0.00;
+        for(int i = 0 ; i < userIdIndexCart.size(); i++){
+            String nameProduct = "";
+            for(int j = 0; j < product.length; j++){
+                if(cart[userIdIndexCart.get(i)].getProductID().equalsIgnoreCase(product[j].getId())){
+                    nameProduct = product[j].getNameProduct();
+                }
+            }
+
+            System.out.printf("\t%-3d %-15s %-13d %-8.2f\n",
+                    countOrder,
+                    nameProduct,
+                    cart[userIdIndexCart.get(i)].getQuantity(),
+                    ((product[i].getCost() * 34) * cart[userIdIndexCart.get(i)].getQuantity()));
+            countOrder++;
+            priceTotal += ((product[i].getCost() * 34) * cart[userIdIndexCart.get(i)].getQuantity());
         }
     }
 }
